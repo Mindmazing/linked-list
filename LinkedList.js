@@ -143,7 +143,14 @@ export class LinkedList {
     if (!index) {
       nextNode = this.#list.head.next;
       this.#list.head = nextNode;
+      this.#size--;
+      return;
     }
+
+    let parentNode = this.at(index - 1, this.#list.head, true);
+    nextNode = parentNode.next.next;
+    parentNode.next = nextNode;
+    this.#size--;
   }
 }
 
