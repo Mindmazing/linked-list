@@ -37,12 +37,43 @@ class LinkedList {
 
   tail(node = this.#list.head) {
     if (!node) return undefined;
-
     if (!node.next) {
       return node.data;
     }
-
     return this.tail(node.next);
+  }
+
+  at(index, node = this.#list.head) {
+    if (index > this.size() - 1 || index < 0) {
+      return undefined;
+    }
+
+    if (index == 0) return node.data;
+    return this.at(index - 1, node.next);
+  }
+
+  pop() {
+    if (this.#list.head) {
+      let firstNode = this.#list.head;
+      this.#list.head = firstNode.next;
+      this.#size--;
+      return firstNode.data;
+    }
+    return undefined;
+  }
+
+  contains(value) {
+    let currentNode = this.#list.head;
+    if (!currentNode) return false;
+
+    for (let i = 0; i < this.size(); i++) {
+      if (currentNode.data === value) {
+        return true;
+      }
+      currentNode = currentNode.next;
+    }
+
+    return false;
   }
 
   list() {
@@ -66,3 +97,9 @@ list.append("Asshole");
 
 console.log(list.head());
 console.log(list.tail());
+console.log(list.at(0));
+// console.log(list.pop());
+console.log(list.at(0));
+console.log(list.contains("Ningen"));
+console.log(list.contains("Asshole"));
+console.log(list.at(3));
