@@ -1,4 +1,4 @@
-class LinkedList {
+export class LinkedList {
   #list = { head: undefined };
   #size = 0;
 
@@ -43,13 +43,17 @@ class LinkedList {
     return this.tail(node.next);
   }
 
-  at(index, node = this.#list.head) {
+  at(index, node = this.#list.head, returnNode = false) {
     if (index > this.size() - 1 || index < 0) {
       return undefined;
     }
 
-    if (index == 0) return node.data;
-    return this.at(index - 1, node.next);
+    if (index == 0) {
+      if (returnNode) return node;
+      return node.data;
+    }
+
+    return this.at(index - 1, node.next, returnNode);
   }
 
   pop() {
@@ -76,8 +80,70 @@ class LinkedList {
     return false;
   }
 
-  list() {
-    return this.#list;
+  findIndex(value) {
+    if (!this.contains(value)) {
+      return -1;
+    }
+    let currentNode = this.#list.head;
+    for (let i = 0; i < this.size(); i++) {
+      if (currentNode.data === value) {
+        return i;
+      }
+      currentNode = currentNode.next;
+    }
+  }
+
+  toString() {
+    let listString = "";
+    let currentNode = this.#list.head;
+    for (let i = 0; i < this.size(); i++) {
+      listString += `( ${currentNode.data} ) -> `;
+      currentNode = currentNode.next;
+    }
+    listString += "null";
+    return listString;
+  }
+
+  insertAt(index, ...values) {
+    // check if index is valid
+    if (index > this.size() || index < 0) {
+      throw new RangeError("Index out of range");
+    }
+
+    // if parent node is head, change parent node to first value
+    let originalNode, parentNode;
+    if (!index) {
+      originalNode = this.#list.head;
+      parentNode = new Node(values[0]);
+      this.#list.head = parentNode;
+      this.#size++;
+    } else {
+      // get parent node a
+      parentNode = this.at(index - 1, this.#list.head, true);
+      originalNode = parentNode.next;
+    }
+
+    // insert new nodes -> O(n)
+    for (let i = index === 0 ? 1 : 0; i < values.length; i++) {
+      parentNode.next = new Node(values[i]);
+      parentNode = parentNode.next;
+      this.#size++;
+    }
+    parentNode.next = originalNode;
+  }
+
+  removeAt(index) {
+    // validate index
+    if (index >= this.size() || index < 0) {
+      throw new RangeError("Index out of range");
+    }
+
+    // special case for head node
+    let nextNode;
+    if (!index) {
+      nextNode = this.#list.head.next;
+      this.#list.head = nextNode;
+    }
   }
 }
 
@@ -87,19 +153,3 @@ class Node {
     this.next = null;
   }
 }
-
-const list = new LinkedList();
-
-list.append("Dog");
-list.append("Ningen");
-list.append("Nigga");
-list.append("Asshole");
-
-console.log(list.head());
-console.log(list.tail());
-console.log(list.at(0));
-// console.log(list.pop());
-console.log(list.at(0));
-console.log(list.contains("Ningen"));
-console.log(list.contains("Asshole"));
-console.log(list.at(3));
